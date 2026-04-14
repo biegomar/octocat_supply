@@ -40,6 +40,12 @@ export default function Navigation() {
                 Products
               </Link>
               <Link
+                to="/happy-cats"
+                className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
+              >
+                Happy Customers
+              </Link>
+              <Link
                 to="/about"
                 className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
               >
