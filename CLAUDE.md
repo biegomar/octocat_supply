@@ -129,3 +129,4 @@ Swagger UI: `http://localhost:3000/api-docs`
 
 ## Git-Commits
 Benutze IMMER Conventional Commits, wie hier beschrieben: https://www.conventionalcommits.org/en/v1.0.0/#specification
+Referenziere IMMER das Issue in dem Commit, falls du an einem konkreten Issue arbeitest.
