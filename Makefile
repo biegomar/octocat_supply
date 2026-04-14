@@ -63,6 +63,10 @@ dev-frontend: ## Start only the frontend development server
 db-init: ## Initialize database schema
 	cd $(API_DIR) && npm run db:init
 
+.PHONY: db-migrate
+db-migrate: ## Run database migrations only (no seed)
+	cd $(API_DIR) && npx tsx src/init-db.ts
+
 .PHONY: db-seed
 db-seed: ## Initialize and seed database with sample data
 	cd $(API_DIR) && npm run db:seed
