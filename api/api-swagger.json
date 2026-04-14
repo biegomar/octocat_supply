@@ -438,6 +438,10 @@
                                         "type": "integer",
                                         "description": "The ID of the associated product"
                                     },
+                                    "comment": {
+                                        "type": "string",
+                                        "description": "Optional comment from the customer explaining why their cat is so happy"
+                                    },
                                     "image": {
                                         "type": "string",
                                         "format": "binary",
@@ -1780,6 +1784,11 @@
                         "type": "string",
                         "format": "date-time",
                         "description": "The timestamp when the image was uploaded"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "An optional comment from the customer explaining why their cat is so happy"
                     }
                 }
             },

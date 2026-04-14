@@ -39,6 +39,9 @@
  *               productId:
  *                 type: integer
  *                 description: The ID of the associated product
+ *               comment:
+ *                 type: string
+ *                 description: Optional comment from the customer explaining why their cat is so happy
  *               image:
  *                 type: string
  *                 format: binary
@@ -149,9 +152,10 @@ router.get('/:id', async (req, res, next) => {
 // POST / — create a happy cat entry
 router.post('/', upload.single('image'), async (req, res, next) => {
   try {
-    const { catName, productId: productIdRaw } = req.body as {
+    const { catName, productId: productIdRaw, comment } = req.body as {
       catName?: string;
       productId?: string;
+      comment?: string;
     };
 
     const productId = productIdRaw !== undefined ? parseInt(productIdRaw, 10) : undefined;
@@ -166,7 +170,7 @@ router.post('/', upload.single('image'), async (req, res, next) => {
     const imagePath = req.file ? `uploads/${req.file.filename}` : '';
 
     const repo = await getHappyCatsRepository();
-    const created = await repo.create({ catName, productId, imagePath });
+    const created = await repo.create({ catName, productId, imagePath, comment: comment ?? null });
     res.status(201).json(created);
   } catch (error) {
     next(error);

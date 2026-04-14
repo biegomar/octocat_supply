@@ -18,6 +18,7 @@ export default function HappyCatUploadForm({ products, onClose, onSuccess }: Hap
   const { darkMode } = useTheme();
   const [catName, setCatName] = useState('');
   const [productId, setProductId] = useState<number>(products[0]?.productId || 0);
+  const [comment, setComment] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +54,9 @@ export default function HappyCatUploadForm({ products, onClose, onSuccess }: Hap
       formData.append('image', imageFile);
       formData.append('catName', catName);
       formData.append('productId', String(productId));
+      if (comment.trim()) {
+        formData.append('comment', comment.trim());
+      }
       await axios.post(`${api.baseURL}${api.endpoints.happyCats}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -119,6 +123,22 @@ export default function HappyCatUploadForm({ products, onClose, onSuccess }: Hap
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label
+              htmlFor="comment"
+              className={`block ${darkMode ? 'text-light' : 'text-gray-700'} mb-1`}
+            >
+              Comment <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>(optional)</span>
+            </label>
+            <textarea
+              id="comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+              placeholder="Why is your cat so happy?"
+              className={`w-full px-3 py-2 ${darkMode ? 'bg-gray-700 text-light' : 'bg-gray-100 text-gray-800'} rounded resize-none`}
+            />
           </div>
           <div>
             <label

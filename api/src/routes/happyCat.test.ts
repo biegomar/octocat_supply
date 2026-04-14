@@ -65,6 +65,29 @@ describe('Happy Cat API', () => {
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
   });
 
+  it('POST / → 201 creates a new happy cat with comment', async () => {
+    const response = await request(app)
+      .post('/happy-cats')
+      .field('catName', 'Whiskers')
+      .field('productId', '1')
+      .field('comment', 'She absolutely loves this product!');
+
+    expect(response.status).toBe(201);
+    expect(response.body.catName).toBe('Whiskers');
+    expect(response.body.comment).toBe('She absolutely loves this product!');
+  });
+
+  it('POST / → 201 creates a new happy cat without comment (comment is null)', async () => {
+    const response = await request(app)
+      .post('/happy-cats')
+      .field('catName', 'Whiskers')
+      .field('productId', '1');
+
+    expect(response.status).toBe(201);
+    expect(response.body.catName).toBe('Whiskers');
+    expect(response.body.comment).toBeNull();
+  });
+
   it('GET / → 200 returns all happy cats', async () => {
     const db = await getDatabase();
     await db.run(
