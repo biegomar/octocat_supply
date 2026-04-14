@@ -36,8 +36,10 @@ describe('Happy Cat API', () => {
   });
 
   it('POST / → 201 creates a new happy cat (happy path)', async () => {
-    const payload = { catName: 'Whiskers', productId: 1, imagePath: 'uploads/whiskers.jpg' };
-    const response = await request(app).post('/happy-cats').send(payload);
+    const response = await request(app)
+      .post('/happy-cats')
+      .field('catName', 'Whiskers')
+      .field('productId', '1');
 
     expect(response.status).toBe(201);
     expect(response.body.happyCatId).toBeDefined();
@@ -47,7 +49,7 @@ describe('Happy Cat API', () => {
   });
 
   it('POST / → 400 when required fields are missing', async () => {
-    const response = await request(app).post('/happy-cats').send({ imagePath: 'uploads/x.jpg' });
+    const response = await request(app).post('/happy-cats').field('imagePath', 'uploads/x.jpg');
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
@@ -56,7 +58,8 @@ describe('Happy Cat API', () => {
   it('POST / → 400 when productId is invalid', async () => {
     const response = await request(app)
       .post('/happy-cats')
-      .send({ catName: 'Ghost', productId: 999, imagePath: '' });
+      .field('catName', 'Ghost')
+      .field('productId', '999');
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe('VALIDATION_ERROR');

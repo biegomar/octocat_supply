@@ -422,7 +422,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "required": [
@@ -438,9 +438,10 @@
                                         "type": "integer",
                                         "description": "The ID of the associated product"
                                     },
-                                    "imagePath": {
+                                    "image": {
                                         "type": "string",
-                                        "description": "Optional initial image path"
+                                        "format": "binary",
+                                        "description": "Optional cat image (JPEG, PNG, or WebP)"
                                     }
                                 }
                             }
@@ -459,7 +460,7 @@
                         }
                     },
                     "400": {
-                        "description": "Validation error (missing fields or invalid productId)"
+                        "description": "Validation error (missing fields, invalid productId, or unsupported file type)"
                     }
                 }
             }
