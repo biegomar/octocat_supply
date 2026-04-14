@@ -100,6 +100,23 @@ export class HappyCatsRepository {
   }
 
   /**
+   * Clear the image_path of a happy cat by ID (set to empty string)
+   */
+  async clearImagePath(id: number): Promise<void> {
+    try {
+      const result = await this.db.run(
+        "UPDATE happy_cats SET image_path = '' WHERE happy_cat_id = ?",
+        [id],
+      );
+      if (result.changes === 0) {
+        throw new NotFoundError('HappyCat', id);
+      }
+    } catch (error) {
+      handleDatabaseError(error, 'HappyCat', id);
+    }
+  }
+
+  /**
    * Delete a happy cat by ID
    */
   async delete(id: number): Promise<void> {

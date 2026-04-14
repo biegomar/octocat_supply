@@ -36,6 +36,21 @@
  *               format: binary
  *       404:
  *         description: Lucky Cat not found or has no image
+ *   delete:
+ *     summary: Delete the image for a Lucky Cat
+ *     tags: [LuckyCats]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Lucky Cat (happy_cat) ID
+ *     responses:
+ *       204:
+ *         description: Image deleted successfully
+ *       404:
+ *         description: Lucky Cat not found or has no image
  *   post:
  *     summary: Upload an image for a Lucky Cat
  *     tags: [LuckyCats]
@@ -183,6 +198,37 @@ router.post('/:id/image', upload.single('image'), async (req, res, next) => {
     const imagePath = `uploads/${req.file.filename}`;
     const updated = await repo.updateImagePath(id, imagePath);
     res.json(updated);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// DELETE /:id/image — remove the Lucky Cat image from disk and clear image_path
+router.delete('/:id/image', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const repo = await getHappyCatsRepository();
+    const cat = await repo.findById(id);
+
+    if (!cat) {
+      return res.status(404).json({
+        error: { code: 'NOT_FOUND', message: `HappyCat with ID ${id} not found` },
+      });
+    }
+
+    if (!cat.imagePath) {
+      return res.status(404).json({
+        error: { code: 'NOT_FOUND', message: `HappyCat with ID ${id} has no image` },
+      });
+    }
+
+    const filename = path.basename(cat.imagePath);
+    const filePath = path.join(getUploadsDir(), filename);
+
+    await fs.promises.unlink(filePath).catch(() => {});
+    await repo.clearImagePath(id);
+
+    return res.status(204).send();
   } catch (error) {
     next(error);
   }
