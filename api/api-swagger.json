@@ -632,6 +632,63 @@
                 }
             }
         },
+        "/api/lucky-cats/{id}/image": {
+            "post": {
+                "summary": "Upload an image for a Lucky Cat",
+                "tags": [
+                    "LuckyCats"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Lucky Cat (happy_cat) ID"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Image file (JPEG, PNG, or WebP only)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image uploaded successfully; image_path updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HappyCatWithProduct"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No file attached or unsupported file type"
+                    },
+                    "404": {
+                        "description": "Lucky Cat not found"
+                    }
+                }
+            }
+        },
         "/api/orders": {
             "get": {
                 "summary": "Returns all orders",
@@ -1516,6 +1573,63 @@
                     }
                 }
             },
+            "HappyCat": {
+                "type": "object",
+                "required": [
+                    "happyCatId",
+                    "catName",
+                    "productId",
+                    "imagePath",
+                    "uploadedAt"
+                ],
+                "properties": {
+                    "happyCatId": {
+                        "type": "integer",
+                        "description": "The unique identifier for the happy cat entry"
+                    },
+                    "catName": {
+                        "type": "string",
+                        "description": "The name of the cat"
+                    },
+                    "productId": {
+                        "type": "integer",
+                        "description": "The ID of the product the cat is associated with"
+                    },
+                    "imagePath": {
+                        "type": "string",
+                        "description": "The file path to the uploaded cat image"
+                    },
+                    "uploadedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The timestamp when the image was uploaded"
+                    }
+                }
+            },
+            "HappyCatWithProduct": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/HappyCat"
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "productName",
+                            "productImgName"
+                        ],
+                        "properties": {
+                            "productName": {
+                                "type": "string",
+                                "description": "The name of the associated product"
+                            },
+                            "productImgName": {
+                                "type": "string",
+                                "description": "The image filename of the associated product"
+                            }
+                        }
+                    }
+                ]
+            },
             "Headquarters": {
                 "type": "object",
                 "required": [
@@ -1786,6 +1900,10 @@
         {
             "name": "Headquarters",
             "description": "API endpoints for managing headquarters locations"
+        },
+        {
+            "name": "LuckyCats",
+            "description": "API endpoints for Lucky Cat image uploads"
         },
         {
             "name": "Orders",

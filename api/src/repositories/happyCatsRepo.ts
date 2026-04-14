@@ -78,6 +78,28 @@ export class HappyCatsRepository {
   }
 
   /**
+   * Update the image_path of a happy cat by ID
+   */
+  async updateImagePath(id: number, imagePath: string): Promise<HappyCatWithProduct> {
+    try {
+      const result = await this.db.run(
+        'UPDATE happy_cats SET image_path = ? WHERE happy_cat_id = ?',
+        [imagePath, id],
+      );
+      if (result.changes === 0) {
+        throw new NotFoundError('HappyCat', id);
+      }
+      const updated = await this.findById(id);
+      if (!updated) {
+        throw new NotFoundError('HappyCat', id);
+      }
+      return updated;
+    } catch (error) {
+      handleDatabaseError(error, 'HappyCat', id);
+    }
+  }
+
+  /**
    * Delete a happy cat by ID
    */
   async delete(id: number): Promise<void> {

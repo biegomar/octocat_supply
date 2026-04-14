@@ -137,6 +137,27 @@ describe('HappyCatsRepository', () => {
     });
   });
 
+  describe('updateImagePath', () => {
+    it('should update image_path and return the updated happy cat', async () => {
+      mockDb.run.mockResolvedValue({ changes: 1 });
+      mockDb.get.mockResolvedValue({ ...mockHappyCatRow, image_path: '/uploads/new-uuid.jpg' });
+
+      const result = await repository.updateImagePath(1, '/uploads/new-uuid.jpg');
+
+      expect(mockDb.run).toHaveBeenCalledWith(
+        'UPDATE happy_cats SET image_path = ? WHERE happy_cat_id = ?',
+        ['/uploads/new-uuid.jpg', 1],
+      );
+      expect(result.imagePath).toBe('/uploads/new-uuid.jpg');
+    });
+
+    it('should throw NotFoundError when happy cat does not exist', async () => {
+      mockDb.run.mockResolvedValue({ changes: 0 });
+
+      await expect(repository.updateImagePath(999, '/uploads/x.jpg')).rejects.toThrow(NotFoundError);
+    });
+  });
+
   describe('delete', () => {
     it('should delete existing happy cat', async () => {
       mockDb.run.mockResolvedValue({ changes: 1 });
