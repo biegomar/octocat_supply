@@ -46,3 +46,6 @@ api/data/
 *.db-shm
 
 tmp
+
+# User uploads
+api/uploads/
