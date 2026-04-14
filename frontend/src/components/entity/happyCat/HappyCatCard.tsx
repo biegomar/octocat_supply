@@ -24,7 +24,7 @@ export default function HappyCatCard({ happyCat }: HappyCatCardProps) {
     >
       <div className={`h-48 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
         <img
-          src={`${api.baseURL}${happyCat.imagePath}`}
+          src={`${api.baseURL}/${happyCat.imagePath}`}
           alt={`${happyCat.catName} with ${happyCat.productName}`}
           className="w-full h-full object-cover"
         />
