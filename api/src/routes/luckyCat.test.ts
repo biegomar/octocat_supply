@@ -117,3 +117,112 @@ describe('Lucky Cat image upload API', () => {
     expect(files).toHaveLength(0);
   });
 });
+
+describe('Lucky Cat image retrieval API', () => {
+  let imageFile: string;
+
+  beforeEach(async () => {
+    uploadsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lucky-cat-test-'));
+    process.env.UPLOADS_DIR = uploadsDir;
+
+    await closeDatabase();
+    await getDatabase(true);
+    await runMigrations(true);
+
+    const db = await getDatabase();
+    await db.run(
+      `INSERT INTO suppliers (supplier_id, name, contact_person, email, phone)
+       VALUES (1, 'Paw Supplies Inc', 'Jane Doe', 'jane@paw.com', '555-0001')`,
+    );
+    await db.run(
+      `INSERT INTO products (product_id, supplier_id, name, description, price, sku, unit, img_name)
+       VALUES (1, 1, 'Lucky Paw', 'A lucky paw product', 9.99, 'LP-001', 'piece', 'lucky_paw.png')`,
+    );
+
+    // Write a real image file to the uploads dir
+    imageFile = path.join(uploadsDir, 'test-cat.jpg');
+    fs.writeFileSync(imageFile, Buffer.from('fake-jpeg-data'));
+
+    await db.run(
+      `INSERT INTO happy_cats (happy_cat_id, cat_name, product_id, image_path)
+       VALUES (1, 'Whiskers', 1, 'uploads/test-cat.jpg')`,
+    );
+    await db.run(
+      `INSERT INTO happy_cats (happy_cat_id, cat_name, product_id, image_path)
+       VALUES (2, 'NoImage', 1, '')`,
+    );
+
+    app = express();
+    app.use('/lucky-cats', luckyCatRouter);
+    app.use(errorHandler);
+  });
+
+  afterEach(async () => {
+    delete process.env.UPLOADS_DIR;
+    await closeDatabase();
+    fs.rmSync(uploadsDir, { recursive: true, force: true });
+  });
+
+  it('should return the image file with correct Content-Type (200)', async () => {
+    const response = await request(app).get('/lucky-cats/1/image');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/image\/jpeg/);
+    expect(response.body).toBeDefined();
+  });
+
+  it('should return 404 when the Lucky Cat does not exist', async () => {
+    const response = await request(app).get('/lucky-cats/999/image');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.message).toContain('999');
+  });
+
+  it('should return 404 when the Lucky Cat has no image', async () => {
+    const response = await request(app).get('/lucky-cats/2/image');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.message).toContain('2');
+  });
+
+  it('should return 404 when the image file is missing from disk', async () => {
+    fs.unlinkSync(imageFile);
+
+    const response = await request(app).get('/lucky-cats/1/image');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.message).toContain('1');
+  });
+
+  it('should return image/png Content-Type for .png files', async () => {
+    const pngFile = path.join(uploadsDir, 'test-cat.png');
+    fs.writeFileSync(pngFile, Buffer.from('fake-png-data'));
+
+    const db = await getDatabase();
+    await db.run(
+      `INSERT INTO happy_cats (happy_cat_id, cat_name, product_id, image_path)
+       VALUES (3, 'PngCat', 1, 'uploads/test-cat.png')`,
+    );
+
+    const response = await request(app).get('/lucky-cats/3/image');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/image\/png/);
+  });
+
+  it('should return image/webp Content-Type for .webp files', async () => {
+    const webpFile = path.join(uploadsDir, 'test-cat.webp');
+    fs.writeFileSync(webpFile, Buffer.from('fake-webp-data'));
+
+    const db = await getDatabase();
+    await db.run(
+      `INSERT INTO happy_cats (happy_cat_id, cat_name, product_id, image_path)
+       VALUES (4, 'WebpCat', 1, 'uploads/test-cat.webp')`,
+    );
+
+    const response = await request(app).get('/lucky-cats/4/image');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/image\/webp/);
+  });
+});

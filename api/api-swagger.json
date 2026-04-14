@@ -633,6 +633,51 @@
             }
         },
         "/api/lucky-cats/{id}/image": {
+            "get": {
+                "summary": "Retrieve the image for a Lucky Cat",
+                "tags": [
+                    "LuckyCats"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Lucky Cat (happy_cat) ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The image file for the Lucky Cat",
+                        "content": {
+                            "image/jpeg": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            },
+                            "image/webp": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lucky Cat not found or has no image"
+                    }
+                }
+            },
             "post": {
                 "summary": "Upload an image for a Lucky Cat",
                 "tags": [

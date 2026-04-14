@@ -8,6 +8,34 @@
 /**
  * @swagger
  * /api/lucky-cats/{id}/image:
+ *   get:
+ *     summary: Retrieve the image for a Lucky Cat
+ *     tags: [LuckyCats]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Lucky Cat (happy_cat) ID
+ *     responses:
+ *       200:
+ *         description: The image file for the Lucky Cat
+ *         content:
+ *           image/jpeg:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *           image/png:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *           image/webp:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Lucky Cat not found or has no image
  *   post:
  *     summary: Upload an image for a Lucky Cat
  *     tags: [LuckyCats]
@@ -85,7 +113,51 @@ const upload = multer({
   },
 });
 
+const MIME_TYPES: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+};
+
 const router = express.Router();
+
+// GET /:id/image — serve the Lucky Cat image
+router.get('/:id/image', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const repo = await getHappyCatsRepository();
+    const cat = await repo.findById(id);
+
+    if (!cat) {
+      return res.status(404).json({
+        error: { code: 'NOT_FOUND', message: `HappyCat with ID ${id} not found` },
+      });
+    }
+
+    if (!cat.imagePath) {
+      return res.status(404).json({
+        error: { code: 'NOT_FOUND', message: `HappyCat with ID ${id} has no image` },
+      });
+    }
+
+    const filename = path.basename(cat.imagePath);
+    const filePath = path.join(getUploadsDir(), filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        error: { code: 'NOT_FOUND', message: `Image file for HappyCat with ID ${id} not found` },
+      });
+    }
+
+    const ext = path.extname(filename).toLowerCase();
+    const contentType = MIME_TYPES[ext] ?? 'application/octet-stream';
+    res.setHeader('Content-Type', contentType);
+    res.sendFile(filePath);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // POST /:id/image — upload a Lucky Cat image
 router.post('/:id/image', upload.single('image'), async (req, res, next) => {
