@@ -11,6 +11,7 @@ import branchRoutes from './routes/branch';
 import headquartersRoutes from './routes/headquarters';
 import supplierRoutes from './routes/supplier';
 import luckyCatRoutes from './routes/luckyCat';
+import happyCatRoutes from './routes/happyCat';
 import { initializeDatabase } from './init-db';
 import { errorHandler } from './utils/errors';
 
@@ -84,6 +85,7 @@ app.use('/api/branches', branchRoutes);
 app.use('/api/headquarters', headquartersRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/lucky-cats', luckyCatRoutes);
+app.use('/api/happy-cats', happyCatRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');
