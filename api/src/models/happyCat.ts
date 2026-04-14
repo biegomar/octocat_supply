@@ -27,6 +27,10 @@
  *           type: string
  *           format: date-time
  *           description: The timestamp when the image was uploaded
+ *         comment:
+ *           type: string
+ *           nullable: true
+ *           description: An optional comment from the customer explaining why their cat is so happy
  *     HappyCatWithProduct:
  *       allOf:
  *         - $ref: '#/components/schemas/HappyCat'
@@ -48,6 +52,7 @@ export interface HappyCat {
   productId: number;
   imagePath: string;
   uploadedAt: string;
+  comment?: string | null;
 }
 
 export interface HappyCatWithProduct extends HappyCat {

@@ -15,6 +15,7 @@ const SELECT_WITH_PRODUCT = `
     hc.product_id,
     hc.image_path,
     hc.uploaded_at,
+    hc.comment,
     p.name AS product_name,
     p.img_name AS product_img_name
   FROM happy_cats hc
@@ -55,7 +56,7 @@ export class HappyCatsRepository {
   /**
    * Create a new happy cat entry
    */
-  async create(data: { catName: string; productId: number; imagePath: string }): Promise<HappyCatWithProduct> {
+  async create(data: { catName: string; productId: number; imagePath: string; comment?: string | null }): Promise<HappyCatWithProduct> {
     try {
       const productsRepo = await getProductsRepository();
       const productExists = await productsRepo.exists(data.productId);

@@ -9,6 +9,7 @@ interface HappyCatWithProduct {
   uploadedAt: string;
   productName: string;
   productImgName: string;
+  comment?: string | null;
 }
 
 interface HappyCatCardProps {
@@ -39,6 +40,11 @@ export default function HappyCatCard({ happyCat }: HappyCatCardProps) {
         <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
           {new Date(happyCat.uploadedAt).toLocaleDateString()}
         </p>
+        {happyCat.comment && (
+          <p className={`text-sm mt-2 italic ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            "{happyCat.comment}"
+          </p>
+        )}
       </div>
     </div>
   );

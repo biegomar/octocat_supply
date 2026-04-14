@@ -18,6 +18,7 @@ const SELECT_WITH_PRODUCT = `SELECT
     hc.product_id,
     hc.image_path,
     hc.uploaded_at,
+    hc.comment,
     p.name AS product_name,
     p.img_name AS product_img_name
   FROM happy_cats hc
@@ -29,6 +30,7 @@ const mockHappyCatRow = {
   product_id: 10,
   image_path: '/uploads/whiskers.jpg',
   uploaded_at: '2026-04-14T12:00:00',
+  comment: null,
   product_name: 'Cat Treat Premium',
   product_img_name: 'cat_treat.png',
 };
@@ -39,6 +41,7 @@ const expectedHappyCat = {
   productId: 10,
   imagePath: '/uploads/whiskers.jpg',
   uploadedAt: '2026-04-14T12:00:00',
+  comment: null,
   productName: 'Cat Treat Premium',
   productImgName: 'cat_treat.png',
 };
@@ -127,6 +130,20 @@ describe('HappyCatsRepository', () => {
         ['Luna', 10, '/uploads/luna.jpg'],
       );
       expect(result.catName).toBe('Luna');
+    });
+
+    it('should create a new happy cat with a comment', async () => {
+      mockProductsRepo.exists.mockResolvedValue(true);
+      mockDb.run.mockResolvedValue({ lastID: 3, changes: 1 });
+      mockDb.get.mockResolvedValue({ ...mockHappyCatRow, happy_cat_id: 3, cat_name: 'Luna', image_path: '/uploads/luna.jpg', comment: 'She loves this product!' });
+
+      const result = await repository.create({ ...newData, comment: 'She loves this product!' });
+
+      expect(mockDb.run).toHaveBeenCalledWith(
+        'INSERT INTO happy_cats (cat_name, product_id, image_path, comment) VALUES (?, ?, ?, ?)',
+        ['Luna', 10, '/uploads/luna.jpg', 'She loves this product!'],
+      );
+      expect(result.comment).toBe('She loves this product!');
     });
 
     it('should throw ValidationError when product does not exist', async () => {

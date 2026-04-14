@@ -14,6 +14,7 @@ interface HappyCatWithProduct {
   uploadedAt: string;
   productName: string;
   productImgName: string;
+  comment?: string | null;
 }
 
 interface Product {
