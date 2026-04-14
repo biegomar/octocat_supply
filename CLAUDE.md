@@ -14,7 +14,8 @@ All primary commands are in the root `Makefile`. Run `make help` for a full list
 ```bash
 make install       # Install all dependencies (api + frontend)
 make dev           # Start API (port 3000) + Frontend (port 5137) dev servers
-make dev-api       # API only
+make d
+ev-api       # API only
 make dev-frontend  # Frontend only
 ```
 
@@ -125,3 +126,6 @@ Swagger UI: `http://localhost:3000/api-docs`
 ## MCP Servers (Optional)
 
 `.vscode/mcp.json` configures GitHub and Playwright MCP servers. Requires Docker/Podman and a GitHub PAT for the GitHub server. Start via VS Code command palette: `MCP: List servers`.
+
+## Git-Commits
+Benutze IMMER Conventional Commits, wie hier beschrieben: https://www.conventionalcommits.org/en/v1.0.0/#specification
